@@ -1,8 +1,8 @@
 package test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Tile {
 	public final char letter;
@@ -34,7 +34,7 @@ public class Tile {
 		private static final int abcLength = 26;
 		private int toalTiles;
 		private final int maxTiles = 98;
-		private List<Integer> availableTiles;
+		private Set<Integer> availableTiles;
 
 		public Bag() {
 			this.amounts = new int[abcLength];
@@ -58,20 +58,20 @@ public class Tile {
 		}
 
 		public Tile getRand() {
-			if (this.isEmpty()) {
+			if(this.availableTiles.isEmpty()){
 				return null;
 			}
+			Integer[] indexes = this.availableTiles.toArray(new Integer[0]);
 			Random rand = new Random();
-			int randOuterIndex = rand.nextInt(this.availableTiles.size());
-			/* It SHOULD only return an index of an available tile */
-			int randInnerIndex = this.availableTiles.get(randOuterIndex);
-			Tile returnedTile = this.tiles[randInnerIndex];
-			this.decreaseAmount(randInnerIndex);
-			return returnedTile;
+			int indexesListRandIndex = rand.nextInt(indexes.length);
+			int randIndex = indexes[indexesListRandIndex];
+			Tile randomTile = this.tiles[randIndex];
+			this.decreaseAmount(randIndex);
+			return randomTile;
 		}
 
 		private void initAvailable() {
-			this.availableTiles = new ArrayList<>();
+			this.availableTiles = new HashSet<>(32);
 			for (int i = 0; i < 26; i++) {
 				this.availableTiles.add(i);
 			}
