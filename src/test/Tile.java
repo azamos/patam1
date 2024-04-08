@@ -28,15 +28,18 @@ public class Tile {
 	/**
 	 * Bag
 	 */
-	public static class Bag {
+	private static class Bag {
 		private int[] amounts;
 		private Tile[] tiles;
 		private static final int abcLength = 26;
 		private int toalTiles;
-		private final int maxTiles = 98;
+		private static final int maxTiles = 98;
 		private Set<Integer> availableTiles;
+		private static final char offset = 'A';
+		private static Bag singletonBag = null;
+		
 
-		public Bag() {
+		private Bag() {
 			this.amounts = new int[abcLength];
 			this.init_amounts();
 			this.tiles = new Tile[abcLength];
@@ -45,9 +48,35 @@ public class Tile {
 			this.initAvailable();
 		}
 
-		private boolean isEmpty() {
-			return this.toalTiles == 0;
+		public static Bag getBag(){
+			if(singletonBag == null){
+				singletonBag = new Bag();
+			}
+			return singletonBag;
 		}
+
+		public int[] getQuantities(){
+			return this.amounts.clone();
+		}
+
+		public int size(){
+			return this.toalTiles;
+		}
+
+		public void put(Tile t){
+			if(this.toalTiles < maxTiles){
+				int i = getCharIndex(t.letter);
+				if(this.amounts[i]==0){
+					this.availableTiles.add(i);
+				}
+				this.amounts[i]++;
+				this.toalTiles++;
+			}
+		}
+
+		// private boolean isEmpty() {
+		// 	return this.toalTiles == 0;
+		// }
 
 		private void decreaseAmount(int index) {
 			this.amounts[index] -= 1;
@@ -55,6 +84,18 @@ public class Tile {
 				this.availableTiles.remove(index);
 			}
 			this.toalTiles -= 1;
+		}
+
+		public Tile getTile(char c){
+			int i = getCharIndex(c);
+			if(this.amounts[i]==0){
+				return null;
+			}
+			else{
+				Tile requestedTile = this.tiles[i];
+				this.decreaseAmount(i);
+				return requestedTile;
+			}
 		}
 
 		public Tile getRand() {
@@ -77,9 +118,13 @@ public class Tile {
 			}
 		}
 
+		private int getCharIndex(char c){
+			return c-offset;
+		}
+
 		private void init_tiles() {
 			for (char c = 'A'; c <= 'Z'; c++) {
-				int i = c - 'A';
+				int i = getCharIndex(c);
 				int score;
 				switch (c) {
 					// case 'A','E','I','L','N','O','R','S','T','U':
@@ -121,7 +166,7 @@ public class Tile {
 
 		private void init_amounts() {
 			for (char c = 'A'; c <= 'Z'; c++) {
-				int i = c - 'A';
+				int i = getCharIndex(c);
 				switch (c) {
 					case 'A', 'I':
 						this.amounts[i] = 9;
