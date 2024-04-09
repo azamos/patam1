@@ -1,5 +1,7 @@
 package test;
 
+import java.util.ArrayList;
+
 public class Board {
     private static Board singletonBoard = null;
     private static Tile[][] matrix;
@@ -60,8 +62,22 @@ public class Board {
     }
 
     private boolean isOnMidPoint(Word word){
-        /* TODO: finish later */
-        return true;
+        int midPoint = (int)(boardDimension/2);
+        if(word.getVertical()){
+            if(word.getCol()==midPoint 
+            && word.getRow()<=midPoint 
+            && word.getRow()+word.getTiles().length >= midPoint){
+                return true;
+            }
+        }
+        else{
+            if(word.getRow()==midPoint 
+            && word.getCol()<=midPoint 
+            && word.getCol()+word.getTiles().length >= midPoint){
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isOverwritting(Word word){
@@ -134,5 +150,106 @@ public class Board {
             }
         }
         return false;
+    }
+    
+    public boolean dictionaryLegal(){
+        return true;
+    }
+
+    private int getLeft(int row,int col){
+        int left = col;
+        col-=1;
+        while(col >= 0 && matrix[row][col]!=null){
+            left = col;
+            col-=1;
+        }
+        return left;
+    }
+
+    private int getRight(int row,int col){
+        int right = col;
+        col+=1;
+        while(col <= boardDimension && matrix[row][col]!=null){
+            right = col;
+            col+=1;
+        }
+        return right;
+    }
+
+    private Word getHorizontalWord(int left, int right, int row){
+        Tile[] tiles = new Tile[right-left+1];
+        for(int j = left; j<=right;j++){
+            tiles[j-left] = matrix[row][j];
+        }
+        return new Word(tiles, row, left, false);
+    }
+
+    
+    private ArrayList<Word> getHorizontalWords(Word verticalWord){
+        ArrayList<Word> horizontalComplete = new ArrayList<Word>();
+        int start = verticalWord.getRow();
+        int n = verticalWord.getTiles().length;
+        int end = start + n;
+        for(int i = start; i < end; i++){
+            int horizontalStart = getLeft(i,verticalWord.getCol());
+            int horizontalEnd = getRight(i,verticalWord.getCol());
+            Word horizontalWord = getHorizontalWord(horizontalStart,horizontalEnd, i);
+            horizontalComplete.add(verticalWord);
+        }
+        return horizontalComplete;
+    }
+
+    
+    private int getTop(int row,int col){
+        int top = row;
+        row-=1;
+        while(row >= 0 && matrix[row][col]!=null){
+            top = row;
+            row-=1;
+        }
+        return top;
+    }
+
+    private int getBottom(int row,int col){
+        int bottom = row;
+        row+=1;
+        while(row <= boardDimension && matrix[row][col]!=null){
+            bottom = row;
+            row+=1;
+        }
+        return bottom;
+    }
+
+    private Word getVerticalWord(int top, int bottom, int col){
+        Tile[] tiles = new Tile[bottom-top+1];
+        for(int i = top; i<=bottom;i++){
+            tiles[i-top] = matrix[i][col];
+        }
+        return new Word(tiles, top, col, true);
+    }
+
+    private ArrayList<Word> getVerticalWords(Word horizontalWord){
+        ArrayList<Word> verticalComplete = new ArrayList<Word>();
+        int start = horizontalWord.getCol();
+        int n = horizontalWord.getTiles().length;
+        int end = start + n;
+        for(int j = start; j < end; j++){
+            int verticalStart = getTop(horizontalWord.getRow(), j);
+            int verticalEnd = getBottom(horizontalWord.getRow(), j);
+            Word verticalWord = getVerticalWord(verticalStart, verticalEnd, j);
+            verticalComplete.add(verticalWord);
+        }
+        return verticalComplete;
+    }
+
+    public ArrayList<Word> getWords(Word word){
+        ArrayList<Word> newWords = new ArrayList<Word>();
+        if(!word.getVertical()){
+            newWords.addAll(getVerticalWords(word));
+        }
+        else{
+            newWords.addAll(getHorizontalWords(word));
+        }
+        return newWords;
     }
 }
