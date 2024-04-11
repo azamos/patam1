@@ -1,6 +1,8 @@
 package test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Board {
     private static Board singletonBoard = null;
@@ -194,7 +196,7 @@ public class Board {
             int horizontalStart = getLeft(i,verticalWord.getCol());
             int horizontalEnd = getRight(i,verticalWord.getCol());
             Word horizontalWord = getHorizontalWord(horizontalStart,horizontalEnd, i);
-            horizontalComplete.add(verticalWord);
+            horizontalComplete.add(horizontalWord);
         }
         return horizontalComplete;
     }
@@ -252,4 +254,84 @@ public class Board {
         }
         return newWords;
     }
+
+    public int getScore(Word word){
+        int score = 0;
+        HashSet<MatrixCoordinate> doubleScoreIndexes = new HashSet<MatrixCoordinate>();
+        MatrixCoordinate mc1 = new MatrixCoordinate(3,0);
+        MatrixCoordinate mc2 = new MatrixCoordinate(6,2);
+        MatrixCoordinate mc3 = new MatrixCoordinate(7,3);
+        MatrixCoordinate mc4 = new MatrixCoordinate(6,6);
+        doubleScoreIndexes.addAll(mc1.getSymmertyCoordinates());
+        doubleScoreIndexes.addAll(mc2.getSymmertyCoordinates());
+        doubleScoreIndexes.addAll(mc3.getSymmertyCoordinates());
+        doubleScoreIndexes.addAll(mc4.getSymmertyCoordinates());
+        if(word.getVertical()){
+            
+        }
+    }
+
+    private class MatrixCoordinate{
+        private int row;
+        private int col;
+        public static final int n = boardDimension-1;
+        private static final int base = 31;
+        private static final int rootPrime = 19;
+        private MatrixCoordinate(int row,int col){
+            this.row = row;
+            this.col = col;
+        }
+        private HashSet<MatrixCoordinate> getSymmertyCoordinates(){
+            HashSet<MatrixCoordinate> symmetrical = new HashSet<MatrixCoordinate>(8);
+            symmetrical.add(this);
+            symmetrical.add(getXsym());
+            symmetrical.add(getYsym());
+            symmetrical.add(getMainDiagSym());
+            symmetrical.add(getSecDiagSym());
+            symmetrical.add(getDiagSecDiagSym());
+            symmetrical.add(getDiagXsym());
+            symmetrical.add(getDiagYsym());
+            return symmetrical;
+
+        }
+        private MatrixCoordinate getXsym(){
+            return new MatrixCoordinate(n-row, col);
+        }
+        private MatrixCoordinate getYsym(){
+            return new MatrixCoordinate(row, n-col);
+        }
+        private MatrixCoordinate getMainDiagSym(){
+            return new MatrixCoordinate(col, row);
+        }
+        private MatrixCoordinate getSecDiagSym(){
+            return new MatrixCoordinate(n-col, n-row);
+        }
+        private MatrixCoordinate getDiagYsym(){
+            return getYsym().getMainDiagSym();
+        }
+        private MatrixCoordinate getDiagSecDiagSym(){
+            return getSecDiagSym().getMainDiagSym();
+        }
+        private MatrixCoordinate getDiagXsym(){
+            return getXsym().getMainDiagSym();
+        }
+        @Override
+        public int hashCode() {
+            int result = rootPrime;
+            result = base*result + row;
+            result = base*result + col;
+            return result;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof MatrixCoordinate){
+                MatrixCoordinate other = (MatrixCoordinate) obj;
+                return this.col == other.col && this.row == other.row;
+            }
+            else{
+                return false;
+            }
+        }
+    }
+    
 }
