@@ -266,9 +266,66 @@ public class Board {
         doubleScoreIndexes.addAll(mc2.getSymmertyCoordinates());
         doubleScoreIndexes.addAll(mc3.getSymmertyCoordinates());
         doubleScoreIndexes.addAll(mc4.getSymmertyCoordinates());
+
+        HashSet<MatrixCoordinate> tripleScoreIndexes = new HashSet<MatrixCoordinate>();
+        MatrixCoordinate triple1 = new MatrixCoordinate(5, 1);
+        MatrixCoordinate triple2 = new MatrixCoordinate(5, 5);
+        tripleScoreIndexes.addAll(triple1.getSymmertyCoordinates());
+        tripleScoreIndexes.addAll(triple2.getSymmertyCoordinates());
+
+        Tile[] wordTiles = word.getTiles();
+        int row = word.getRow();
+        int col = word.getCol();
         if(word.getVertical()){
-            
+            for(int i =0; i < wordTiles.length; i++ ){
+                MatrixCoordinate curr = new MatrixCoordinate(i, col);
+                Tile currTile = wordTiles[i];
+                if(doubleScoreIndexes.contains(curr)){
+                    score += 2 * currTile.score;
+                }
+                else{
+                    if (tripleScoreIndexes.contains(curr)){
+                        score += 3 * currTile.score;
+                    }
+                    else{
+                        score += currTile.score;
+                    }
+                }
+            }
         }
+        else{
+            for(int j =0; j < wordTiles.length; j++ ){
+                MatrixCoordinate curr = new MatrixCoordinate(row, j);
+                Tile currTile = wordTiles[j];
+                if(doubleScoreIndexes.contains(curr)){
+                    score += 2 * currTile.score;
+                }
+                else{
+                    if (tripleScoreIndexes.contains(curr)){
+                        score += 3 * currTile.score;
+                    }
+                    else{
+                        score += currTile.score;
+                    }
+                }
+            }
+        }
+        /*Now that we have the total letters score,
+         * It is time to check if word sits on any
+         *  WORD MULTIPLYING indexes.
+         */
+        HashSet<MatrixCoordinate> tripleScoreWordIndexes = new HashSet<MatrixCoordinate>();
+        MatrixCoordinate tripleWordCoord1 = new MatrixCoordinate(0, 0);
+        MatrixCoordinate tripleWordCoord2 = new MatrixCoordinate(7, 0);
+        tripleScoreWordIndexes.addAll(tripleWordCoord1.getSymmertyCoordinates());
+        tripleScoreWordIndexes.addAll(tripleWordCoord2.getSymmertyCoordinates());
+
+        HashSet<MatrixCoordinate> doubleScoreWordIndexes = new HashSet<MatrixCoordinate>();
+        for(int k=1;k<5;k++){
+            MatrixCoordinate doubleWordIndex = new MatrixCoordinate(k, k);
+            doubleScoreWordIndexes.addAll(doubleWordIndex.getSymmertyCoordinates());
+        }
+         return score;
     }
 
     private class MatrixCoordinate{
