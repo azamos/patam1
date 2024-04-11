@@ -2,7 +2,7 @@ package test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+// import java.util.Set;
 
 public class Board {
     private static Board singletonBoard = null;
@@ -16,6 +16,7 @@ public class Board {
     
     private Board() {
         matrix = new Tile[boardDimension][boardDimension];
+        initiateBoardScores();
     }
 
     public Board getBoard() {
@@ -31,6 +32,13 @@ public class Board {
         inititateDoubleWords();
         inititateTripleWords();
     }
+
+    // private void inititateScoresSet(HashSet<MatrixCoordinate> scoreSet,
+    // HashSet<MatrixCoordinate> seedCoordinates){
+    //     for (MatrixCoordinate matrixCoordinate : seedCoordinates) {
+    //         scoreSet.addAll(matrixCoordinate.getSymmertyCoordinates());
+    //     }
+    // }
 
     private void inititateDoubleLetters(){
         MatrixCoordinate mc1 = new MatrixCoordinate(3,0);
@@ -342,8 +350,19 @@ public class Board {
          *  WORD MULTIPLYING indexes.
          */
 
+         for (MatrixCoordinate mc : doubleScoreWordIndexes) {
+            if(mc.isWithinWord(word)){
+                score *= 2;
+            }
+         }
         
-        if(emptyBoard){
+         for (MatrixCoordinate mc : tripleScoreWordIndexes) {
+            if(mc.isWithinWord(word)){
+                score *= 3;
+            }
+         }
+        
+        if(emptyBoard && new MatrixCoordinate(7, 7).isWithinWord(word)){
             score*=2;
         }
          return score;
@@ -359,6 +378,27 @@ public class Board {
             this.row = row;
             this.col = col;
         }
+        private boolean isWithinWord(Word word){
+            int n = word.getTiles().length;
+            int wordRow = word.getRow();
+            int wordCol = word.getCol();
+            if(word.getVertical()){
+                if(col==wordCol
+                && row >= wordRow
+                && row < wordRow + n){
+                        return true;
+                    }
+            }
+            else{
+                if(row==wordRow
+                && col >= wordCol
+                && col < wordCol + n){
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private HashSet<MatrixCoordinate> getSymmertyCoordinates(){
             HashSet<MatrixCoordinate> symmetrical = new HashSet<MatrixCoordinate>(8);
             symmetrical.add(this);
