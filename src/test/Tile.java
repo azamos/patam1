@@ -28,7 +28,7 @@ public class Tile {
 	/**
 	 * Bag
 	 */
-	private static class Bag {
+	public static class Bag {
 		private int[] amounts;
 		private Tile[] tiles;
 		private static final int abcLength = 26;
@@ -87,7 +87,11 @@ public class Tile {
 		}
 
 		public Tile getTile(char c){
+			c = Character.toUpperCase(c);
 			int i = getCharIndex(c);
+			if(i>26){
+				return null;
+			}
 			if(this.amounts[i]==0){
 				return null;
 			}

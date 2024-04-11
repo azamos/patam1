@@ -19,11 +19,56 @@ public class Board {
         initiateBoardScores();
     }
 
-    public Board getBoard() {
+    public static Board getBoard() {
         if (singletonBoard == null) {
             singletonBoard = new Board();
         }
         return singletonBoard;
+    }
+
+    private void placeOnBoard(Word word){
+        /*Assumes that prior checks have been made,
+         * and word can indeed be placed in the specified coordinates
+         * and in the specified direction.
+         */
+        Tile[] wordTiles = word.getTiles();
+        int row = word.getRow();
+        int col = word.getCol();
+        if(word.getVertical()){
+            for(int i =0;i<wordTiles.length;i++){
+                matrix[row+i][col] = wordTiles[i];
+            }
+        }
+        else{
+            for(int j=0; j< wordTiles.length; j++){
+                matrix[row][col+j] = wordTiles[j];
+            }
+        }
+    }
+
+    public int tryPlaceWord(Word word){
+        boolean allLegal = true;
+        ArrayList<Word> newWords = null;
+        if(boardLegal(word)){
+            newWords = getWords(word);
+            for (Word newWord : newWords) {
+                if(!dictionaryLegal(newWord)){
+                    allLegal = false;
+                    break;
+                }
+            }
+        }
+        if(allLegal && newWords!=null){
+            int score = 0;
+            for (Word newWord : newWords) {
+                score += getScore(newWord);
+                placeOnBoard(word);
+            }
+            return score;
+        }
+        else{
+            return 0;
+        }
     }
 
     private void initiateBoardScores(){
@@ -73,6 +118,11 @@ public class Board {
     }
 
     public boolean boardLegal(Word word) {
+        int row = word.getRow();
+        int col = word.getCol();
+        if(row<0 || row >= boardDimension || col < 0 || col >= boardDimension){
+            return false;
+        }
         if (word.getVertical()) {
             if (word.getRow() + word.getTiles().length >= boardDimension) {
                 return false;
@@ -205,7 +255,7 @@ public class Board {
         return false;
     }
     
-    public boolean dictionaryLegal(){
+    public boolean dictionaryLegal(Word word){
         return true;
     }
 
