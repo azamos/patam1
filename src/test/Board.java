@@ -9,7 +9,11 @@ public class Board {
     private static Tile[][] matrix;
     private static final int boardDimension = 15;
     private boolean emptyBoard = true;
-
+    private HashSet<MatrixCoordinate> doubleScoreIndexes = new HashSet<MatrixCoordinate>();
+    private HashSet<MatrixCoordinate> tripleScoreIndexes = new HashSet<MatrixCoordinate>();
+    private HashSet<MatrixCoordinate> tripleScoreWordIndexes = new HashSet<MatrixCoordinate>();
+    private HashSet<MatrixCoordinate> doubleScoreWordIndexes = new HashSet<MatrixCoordinate>();
+    
     private Board() {
         matrix = new Tile[boardDimension][boardDimension];
     }
@@ -19,6 +23,45 @@ public class Board {
             singletonBoard = new Board();
         }
         return singletonBoard;
+    }
+
+    private void initiateBoardScores(){
+        inititateDoubleLetters();
+        inititateTripleLetters();
+        inititateDoubleWords();
+        inititateTripleWords();
+    }
+
+    private void inititateDoubleLetters(){
+        MatrixCoordinate mc1 = new MatrixCoordinate(3,0);
+        MatrixCoordinate mc2 = new MatrixCoordinate(6,2);
+        MatrixCoordinate mc3 = new MatrixCoordinate(7,3);
+        MatrixCoordinate mc4 = new MatrixCoordinate(6,6);
+        doubleScoreIndexes.addAll(mc1.getSymmertyCoordinates());
+        doubleScoreIndexes.addAll(mc2.getSymmertyCoordinates());
+        doubleScoreIndexes.addAll(mc3.getSymmertyCoordinates());
+        doubleScoreIndexes.addAll(mc4.getSymmertyCoordinates());
+    }
+
+    private void inititateTripleLetters(){
+        MatrixCoordinate triple1 = new MatrixCoordinate(5, 1);
+        MatrixCoordinate triple2 = new MatrixCoordinate(5, 5);
+        tripleScoreIndexes.addAll(triple1.getSymmertyCoordinates());
+        tripleScoreIndexes.addAll(triple2.getSymmertyCoordinates());
+    }
+
+    private void inititateTripleWords(){
+        MatrixCoordinate tripleWordCoord1 = new MatrixCoordinate(0, 0);
+        MatrixCoordinate tripleWordCoord2 = new MatrixCoordinate(7, 0);
+        tripleScoreWordIndexes.addAll(tripleWordCoord1.getSymmertyCoordinates());
+        tripleScoreWordIndexes.addAll(tripleWordCoord2.getSymmertyCoordinates());
+    }
+
+    private void inititateDoubleWords(){
+        for(int k=1;k<5;k++){
+            MatrixCoordinate doubleWordIndex = new MatrixCoordinate(k, k);
+            doubleScoreWordIndexes.addAll(doubleWordIndex.getSymmertyCoordinates());
+        }
     }
 
     public boolean boardLegal(Word word) {
@@ -257,22 +300,6 @@ public class Board {
 
     public int getScore(Word word){
         int score = 0;
-        HashSet<MatrixCoordinate> doubleScoreIndexes = new HashSet<MatrixCoordinate>();
-        MatrixCoordinate mc1 = new MatrixCoordinate(3,0);
-        MatrixCoordinate mc2 = new MatrixCoordinate(6,2);
-        MatrixCoordinate mc3 = new MatrixCoordinate(7,3);
-        MatrixCoordinate mc4 = new MatrixCoordinate(6,6);
-        doubleScoreIndexes.addAll(mc1.getSymmertyCoordinates());
-        doubleScoreIndexes.addAll(mc2.getSymmertyCoordinates());
-        doubleScoreIndexes.addAll(mc3.getSymmertyCoordinates());
-        doubleScoreIndexes.addAll(mc4.getSymmertyCoordinates());
-
-        HashSet<MatrixCoordinate> tripleScoreIndexes = new HashSet<MatrixCoordinate>();
-        MatrixCoordinate triple1 = new MatrixCoordinate(5, 1);
-        MatrixCoordinate triple2 = new MatrixCoordinate(5, 5);
-        tripleScoreIndexes.addAll(triple1.getSymmertyCoordinates());
-        tripleScoreIndexes.addAll(triple2.getSymmertyCoordinates());
-
         Tile[] wordTiles = word.getTiles();
         int row = word.getRow();
         int col = word.getCol();
@@ -314,16 +341,10 @@ public class Board {
          * It is time to check if word sits on any
          *  WORD MULTIPLYING indexes.
          */
-        HashSet<MatrixCoordinate> tripleScoreWordIndexes = new HashSet<MatrixCoordinate>();
-        MatrixCoordinate tripleWordCoord1 = new MatrixCoordinate(0, 0);
-        MatrixCoordinate tripleWordCoord2 = new MatrixCoordinate(7, 0);
-        tripleScoreWordIndexes.addAll(tripleWordCoord1.getSymmertyCoordinates());
-        tripleScoreWordIndexes.addAll(tripleWordCoord2.getSymmertyCoordinates());
 
-        HashSet<MatrixCoordinate> doubleScoreWordIndexes = new HashSet<MatrixCoordinate>();
-        for(int k=1;k<5;k++){
-            MatrixCoordinate doubleWordIndex = new MatrixCoordinate(k, k);
-            doubleScoreWordIndexes.addAll(doubleWordIndex.getSymmertyCoordinates());
+        
+        if(emptyBoard){
+            score*=2;
         }
          return score;
     }
