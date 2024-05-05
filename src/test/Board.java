@@ -184,18 +184,19 @@ public class Board {
     }
 
     private boolean isOverwritting(Word word){
+        Tile[] tiles =  word.getTiles();
         if(word.getVertical()){
-            for(int i=0; i < word.getTiles().length; i++){
+            for(int i=0; i < tiles.length; i++){
                 Tile occupier = matrix[word.getRow()+i][word.getCol()];
-                if(!word.getTiles()[i].equals(occupier)){
+                if(!tiles[i].equals(occupier)){
                     return true;
                 }
             }
         }
         else{
-            for(int j=0; j < word.getTiles().length; j++){
+            for(int j=0; j < tiles.length; j++){
                 Tile occupier = matrix[word.getRow()][word.getCol()+j];
-                if(!word.getTiles()[j].equals(occupier)){
+                if(tiles[j]!=null&&!tiles[j].equals(occupier)){
                     return true;
                 }
             }

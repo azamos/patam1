@@ -15,8 +15,17 @@ public class Tile {
 
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Tile otherTile = (Tile) obj;
+		return letter == otherTile.letter && score == otherTile.score;
 	}
 
 	@Override
@@ -37,7 +46,6 @@ public class Tile {
 		private Set<Integer> availableTiles;
 		private static final char offset = 'A';
 		private static Bag singletonBag = null;
-		
 
 		private Bag() {
 			this.amounts = new int[abcLength];
@@ -48,25 +56,25 @@ public class Tile {
 			this.initAvailable();
 		}
 
-		public static Bag getBag(){
-			if(singletonBag == null){
+		public static Bag getBag() {
+			if (singletonBag == null) {
 				singletonBag = new Bag();
 			}
 			return singletonBag;
 		}
 
-		public int[] getQuantities(){
+		public int[] getQuantities() {
 			return this.amounts.clone();
 		}
 
-		public int size(){
+		public int size() {
 			return this.toalTiles;
 		}
 
-		public void put(Tile t){
-			if(this.toalTiles < maxTiles){
+		public void put(Tile t) {
+			if (this.toalTiles < maxTiles) {
 				int i = getCharIndex(t.letter);
-				if(this.amounts[i]==0){
+				if (this.amounts[i] == 0) {
 					this.availableTiles.add(i);
 				}
 				this.amounts[i]++;
@@ -75,7 +83,7 @@ public class Tile {
 		}
 
 		// private boolean isEmpty() {
-		// 	return this.toalTiles == 0;
+		// return this.toalTiles == 0;
 		// }
 
 		private void decreaseAmount(int index) {
@@ -86,16 +94,14 @@ public class Tile {
 			this.toalTiles -= 1;
 		}
 
-		public Tile getTile(char c){
-			c = Character.toUpperCase(c);
+		public Tile getTile(char c) {
 			int i = getCharIndex(c);
-			if(i>26){
+			if (i > 26 || i < 0) {
 				return null;
 			}
-			if(this.amounts[i]==0){
+			if (this.amounts[i] == 0) {
 				return null;
-			}
-			else{
+			} else {
 				Tile requestedTile = this.tiles[i];
 				this.decreaseAmount(i);
 				return requestedTile;
@@ -103,7 +109,7 @@ public class Tile {
 		}
 
 		public Tile getRand() {
-			if(this.availableTiles.isEmpty()){
+			if (this.availableTiles.isEmpty()) {
 				return null;
 			}
 			Integer[] indexes = this.availableTiles.toArray(new Integer[0]);
@@ -122,8 +128,8 @@ public class Tile {
 			}
 		}
 
-		private int getCharIndex(char c){
-			return c-offset;
+		private int getCharIndex(char c) {
+			return c - offset;
 		}
 
 		private void init_tiles() {
@@ -176,8 +182,8 @@ public class Tile {
 						this.amounts[i] = 9;
 						break;
 					// case 'B', 'C', 'F', 'H', 'M', 'P', 'V', 'W', 'Y':
-					// 	this.amounts[i] = 2;
-					// 	break;
+					// this.amounts[i] = 2;
+					// break;
 					case 'D', 'L', 'S', 'U':
 						this.amounts[i] = 4;
 						break;
