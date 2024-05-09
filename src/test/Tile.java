@@ -135,69 +135,60 @@ public class Tile {
         private void init_tiles() {
             for (char c = 'A'; c <= 'Z'; c++) {
                 int i = getCharIndex(c);
-                int score;
-                switch (c) {
-                    case 'B', 'C', 'M', 'P':
-                        score = 3;
-                        break;
-
-                    case 'D', 'G':
-                        score = 2;
-                        break;
-
-                    case 'F', 'H', 'V', 'W', 'Y':
-                        score = 4;
-                        break;
-
-                    case 'J', 'X':
-                        score = 8;
-                        break;
-
-                    case 'K':
-                        score = 5;
-                        break;
-
-                    case 'Q', 'Z':
-                        score = 10;
-                        break;
-
-                    default:
-                        score = 1;
-                        break;
+                int score = 0;
+                if (c == 'B' || c == 'C' || c == 'M' || c == 'P') {
+                    score = 3;
                 }
-
-                this.tiles[i] = new Tile(c, score);
+                if (c == 'D' || c == 'G') {
+                    score = 2;
+                }
+                if (c == 'F' || c == 'H' || c == 'V' || c == 'W' || c == 'Y') {
+                    score = 4;
+                }
+                if (c == 'J' || c == 'X') {
+                    score = 8;
+                }
+                if (c == 'K') {
+                    score = 5;
+                }
+                if (c == 'Q' || c == 'Z') {
+                    score = 10;
+                }
+                if (c == 'A' || c == 'E' || c == 'I' || c == 'L' || c == 'N' || c == 'O' || c == 'R' || c == 'S'
+                        || c == 'T' || c == 'U') {
+                    score = 1;
+                }
+                tiles[i] = new Tile(c, score);
             }
         }
 
         private void init_amounts() {
             for (char c = 'A'; c <= 'Z'; c++) {
                 int i = getCharIndex(c);
-                switch (c) {
-                    case 'A', 'I':
-                        this.amounts[i] = 9;
-                        break;
-                    case 'D', 'L', 'S', 'U':
-                        this.amounts[i] = 4;
-                        break;
-                    case 'E':
-                        this.amounts[i] = 12;
-                        break;
-                    case 'G':
-                        this.amounts[i] = 3;
-                        break;
-                    case 'J', 'K', 'Q', 'X', 'Z':
-                        this.amounts[i] = 1;
-                        break;
-                    case 'N', 'R', 'T':
-                        this.amounts[i] = 6;
-                        break;
-                    case 'O':
-                        this.amounts[i] = 8;
-                        break;
-                    default:
-                        this.amounts[i] = 2;
-                        break;
+                if (c == 'A' || c == 'I') {
+                    amounts[i] = 9;
+                }
+                if (c == 'D' || c == 'L' || c == 'S' || c == 'U') {
+                    amounts[i] = 4;
+                }
+                if (c == 'E') {
+                    amounts[i] = 12;
+                }
+                if (c == 'G') {
+                    amounts[i] = 3;
+                }
+                if (c == 'J' || c == 'K' || c == 'Q' || c == 'X' || c == 'Z') {
+                    amounts[i] = 1;
+                }
+                if (c == 'N' || c == 'R' || c == 'T') {
+                    amounts[i] = 6;
+                }
+                if (c == 'O') {
+                    amounts[i] = 8;
+                }
+                if (c == 'B' || c == 'C' || c == 'F' || c == 'H' || c == 'M' || c == 'P' || c == 'V' || c == 'W'
+                        || c == 'Y') {
+                    amounts[i] = 2;
                 }
             }
         }
