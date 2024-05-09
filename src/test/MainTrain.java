@@ -78,19 +78,23 @@ public class MainTrain {
 			System.out.println("problem in placeWord for 1st word (-10)");
 
 		Word farm = new Word(get("FA_M"), 5, 7, true);
-		if (b.tryPlaceWord(farm) != 9)
+		int res2 = b.tryPlaceWord(farm);
+		if (res2 != 9)
 			System.out.println("problem in placeWord for 2ed word (-10)");
 
 		Word paste = new Word(get("PASTE"), 9, 5, false);
-		if (b.tryPlaceWord(paste) != 25)
+		int res3 = b.tryPlaceWord(paste);
+		if (res3 != 25)
 			System.out.println("problem in placeWord for 3ed word (-10)");
 
 		Word mob = new Word(get("_OB"), 8, 7, false);
-		if (b.tryPlaceWord(mob) != 18)
+		int res4 = b.tryPlaceWord(mob);
+		if (res4 != 18)
 			System.out.println("problem in placeWord for 4th word (-10)");
 
 		Word bit = new Word(get("BIT"), 10, 4, false);
-		if (b.tryPlaceWord(bit) != 22)
+		int res5 = b.tryPlaceWord(bit);
+		if (res5 != 22)
 			System.out.println("problem in placeWord for 5th word (-15)");
 
 	}
