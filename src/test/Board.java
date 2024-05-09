@@ -27,26 +27,6 @@ public class Board {
     }
 
     private void placeOnBoard(Word word) {
-        /*
-         * Assumes that prior checks have been made,
-         * and word can indeed be placed in the specified coordinates
-         * and in the specified direction.
-         */
-        Tile[] wordTiles = word.getTiles();
-        int row = word.getRow();
-        int col = word.getCol();
-        if (word.getVertical()) {
-            for (int i = 0; i < wordTiles.length; i++) {
-                matrix[row + i][col] = wordTiles[i];
-            }
-        } else {
-            for (int j = 0; j < wordTiles.length; j++) {
-                matrix[row][col + j] = wordTiles[j];
-            }
-        }
-    }
-
-    private void placeWord(Word word) {
         boolean isVertical = word.getVertical();
         int row = word.getRow();
         int col = word.getCol();
@@ -62,6 +42,7 @@ public class Board {
                 }
             }
         }
+        scoredWords.add(word);
     }
 
     public int tryPlaceWord(Word word) {
@@ -90,7 +71,7 @@ public class Board {
             for (Word newWord : newWords) {
                 placeOnBoard(newWord);
             }
-            placeWord(word);
+            placeOnBoard(word);
             return res;
         } else {
             return 0;
@@ -342,7 +323,10 @@ public class Board {
             int horizontalEnd = getRight(i, col);
             if (horizontalEnd > horizontalStart && matrix[i][col] == null) {
                 Word horizontalWord = getHorizontalWord(horizontalStart, horizontalEnd, i);
-                horizontalComplete.add(horizontalWord);
+                if (!scoredWords.contains(horizontalWord)) {
+                    horizontalComplete.add(horizontalWord);
+                    scoredWords.add(horizontalWord);
+                }
             }
         }
         return horizontalComplete;
@@ -394,7 +378,10 @@ public class Board {
             Tile currTile = tiles[j - col];
             if (verticalStart < verticalEnd && (matrix[row][j] != null || currTile != null)) {
                 Word verticalWord = getVerticalWord(verticalStart, verticalEnd, j, currTile);
-                verticalComplete.add(verticalWord);
+                if (!scoredWords.contains(verticalWord)) {
+                    verticalComplete.add(verticalWord);
+                    scoredWords.add(verticalWord);
+                }
             }
         }
         return verticalComplete;

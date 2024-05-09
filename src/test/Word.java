@@ -5,6 +5,8 @@ public class Word {
     private int row;
     private int col;
     private boolean vertical;
+    private static final int BASE = 3;
+    private static final int ROOT = 7;
 
     public Word(Tile[] tiles, int row, int col, boolean vertical) {
         this.tiles = tiles;
@@ -41,7 +43,7 @@ public class Word {
             return false;
         }
         Word otheWord = (Word) obj;
-        if (vertical != otheWord.vertical || col != otheWord.col || row != otheWord.col
+        if (vertical != otheWord.vertical || col != otheWord.col || row != otheWord.row
                 || tiles.length != otheWord.getTiles().length) {
             return false;
         }
@@ -51,6 +53,24 @@ public class Word {
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ROOT;
+        result = BASE * result + row;
+        result = BASE * result + col;
+        result = BASE * result + (vertical ? 11 : 5);
+        for (int i = 0; i < tiles.length; i++) {
+            int tileHash;
+            if (tiles[i] == null) {
+                tileHash = 0;
+            } else {
+                tileHash = tiles[i].hashCode();
+            }
+            result = BASE * result + tileHash;
+        }
+        return result;
     }
 
 }
