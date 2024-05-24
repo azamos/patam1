@@ -42,7 +42,6 @@ public class Board {
                 }
             }
         }
-        scoredWords.add(word);
     }
 
     public int tryPlaceWord(Word word) {
@@ -53,20 +52,30 @@ public class Board {
                 return 0;
             }
         }
-
+        Tile[] wordTiles = word.getTiles();
+        int row = word.getRow();
+        int col = word.getCol();
+        for(int i =0; i< wordTiles.length;i++){
+            if(wordTiles[i] == null){
+                if(word.getVertical()){
+                    wordTiles[i] = matrix[row+i][col];
+                }
+                else{
+                    wordTiles[i] = matrix[row][col+i];
+                }
+            }
+        }
+        word = new Word(wordTiles,row,col,word.getVertical());
         int res = getScore(word);
         if (emptyBoard) {
             emptyBoard = false;
         }
         placeOnBoard(word);
+        scoredWords.add(word);
         for (Word newWord : newWords) {
             res += getScore(newWord);
         }
-//
-//        for (Word newWord : newWords) {
-//            placeOnBoard(newWord);
-//        }
-
+        scoredWords.addAll(newWords);
         return res;
     }
 
@@ -109,6 +118,24 @@ public class Board {
         }
     }
 
+    private boolean atLeastOneNewTile(Word word){
+        Tile[] tiles = word.getTiles();
+        int n = tiles.length;
+        int row = word.getRow();
+        int col = word.getCol();
+        for (int k=0;k<n;k++ ){
+           if(tiles[k] != null){
+               if(word.getVertical()){
+                   if( matrix[row+k][col] == null) return true;
+               }
+               else{
+                   if( matrix[row][col+k] == null) return true;
+               }
+           }
+        }
+        return false;
+    }
+
     public boolean boardLegal(Word word) {
         int row = word.getRow();
         int col = word.getCol();
@@ -126,27 +153,16 @@ public class Board {
             }
         }
 
-        /*
-         * got here -> word fits in board.
-         * Now, to check if word is overwritting another word.
-         */
         if (isOverwritting(word)) {
             return false;
         }
 
-        /*
-         * got here -> word fits in board, and is not overwritting another word.
-         * Now, to check if word is adjacent to another word, or
-         * if it is overlapping with another word.
-         * However, if board is empty, need to check that the word
-         * will cover the mid point (7,7).
-         */
         if (emptyBoard) {
             return isOnMidPoint(word);
         }
 
         else {
-            return isAdjacent(word) || isOverlapping(word);
+            return atLeastOneNewTile(word) && (isAdjacent(word) || isOverlapping(word));
         }
     }
 
@@ -196,22 +212,6 @@ public class Board {
         }
         return false;
     }
-
-    // private boolean isAdjacentLetter(int i, int j) {
-    // if (i + 1 < boardDimension && matrix[i + 1][j] != null) {
-    // return true;
-    // }
-    // if (i - 1 >= 0 && matrix[i - 1][j] != null) {
-    // return true;
-    // }
-    // if (j + 1 < boardDimension && matrix[i][j + 1] != null) {
-    // return true;
-    // }
-    // if (j - 1 >= 0 && matrix[i][j - 1] != null) {
-    // return true;
-    // }
-    // return false;
-    // }
 
     private boolean isAdjacent(Word word) {
         boolean isVertical = word.getVertical();
@@ -317,7 +317,6 @@ public class Board {
                 Word horizontalWord = getHorizontalWord(horizontalStart, horizontalEnd, i);
                 if (!scoredWords.contains(horizontalWord)) {
                     horizontalComplete.add(horizontalWord);
-                    scoredWords.add(horizontalWord);
                 }
             }
         }
@@ -372,7 +371,6 @@ public class Board {
                 Word verticalWord = getVerticalWord(verticalStart, verticalEnd, j, currTile);
                 if (!scoredWords.contains(verticalWord)) {
                     verticalComplete.add(verticalWord);
-                    scoredWords.add(verticalWord);
                 }
             }
         }

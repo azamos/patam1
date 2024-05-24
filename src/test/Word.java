@@ -1,12 +1,13 @@
 package test;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Word {
     private Tile[] tiles;
     private int row;
     private int col;
     private boolean vertical;
-    private static final int BASE = 3;
-    private static final int ROOT = 7;
 
     public Word(Tile[] tiles, int row, int col, boolean vertical) {
         this.tiles = tiles;
@@ -32,45 +33,15 @@ public class Word {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Word otheWord = (Word) obj;
-        if (vertical != otheWord.vertical || col != otheWord.col || row != otheWord.row
-                || tiles.length != otheWord.getTiles().length) {
-            return false;
-        }
-        for (int i = 0; i < tiles.length; i++) {
-            if (!tiles[i].equals(otheWord.tiles[i])) {
-                return false;
-            }
-        }
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Word word = (Word) o;
+        return row == word.row && col == word.col && vertical == word.vertical && Objects.deepEquals(tiles, word.tiles);
     }
 
     @Override
     public int hashCode() {
-        int result = ROOT;
-        result = BASE * result + row;
-        result = BASE * result + col;
-        result = BASE * result + (vertical ? 11 : 5);
-        for (int i = 0; i < tiles.length; i++) {
-            int tileHash;
-            if (tiles[i] == null) {
-                tileHash = 0;
-            } else {
-                tileHash = tiles[i].hashCode();
-            }
-            result = BASE * result + tileHash;
-        }
-        return result;
+        return Objects.hash(Arrays.hashCode(tiles), row, col, vertical);
     }
-
 }

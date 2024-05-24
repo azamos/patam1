@@ -1,14 +1,13 @@
 package test;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
 public class Tile {
     public final char letter;
     public final int score;
-    private static final int BASE = 31;
-    private static final int ROOT = 19;
 
     private Tile(char letter, int score) {
         this.letter = letter;
@@ -16,26 +15,16 @@ public class Tile {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Tile otherTile = (Tile) obj;
-        return letter == otherTile.letter && score == otherTile.score;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tile tile = (Tile) o;
+        return letter == tile.letter && score == tile.score;
     }
 
     @Override
     public int hashCode() {
-        int result = ROOT;
-        result = BASE * result + (letter - 'A');
-        result = BASE * result + score;
-        return result;
+        return Objects.hash(letter, score);
     }
 
     /**
