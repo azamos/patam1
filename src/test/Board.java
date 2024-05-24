@@ -6,13 +6,13 @@ import java.util.HashSet;
 public class Board {
     private static Board singletonBoard = null;
     private static Tile[][] matrix;
-    private HashSet<Word> scoredWords = new HashSet<Word>();
+    private final HashSet<Word> scoredWords = new HashSet<Word>();
     private static final int boardDimension = 15;
     private boolean emptyBoard = true;
-    private HashSet<MatrixCoordinate> doubleScoreIndexes = new HashSet<MatrixCoordinate>();
-    private HashSet<MatrixCoordinate> tripleScoreIndexes = new HashSet<MatrixCoordinate>();
-    private HashSet<MatrixCoordinate> tripleScoreWordIndexes = new HashSet<MatrixCoordinate>();
-    private HashSet<MatrixCoordinate> doubleScoreWordIndexes = new HashSet<MatrixCoordinate>();
+    private final HashSet<MatrixCoordinate> doubleScoreIndexes = new HashSet<MatrixCoordinate>();
+    private final HashSet<MatrixCoordinate> tripleScoreIndexes = new HashSet<MatrixCoordinate>();
+    private final HashSet<MatrixCoordinate> tripleScoreWordIndexes = new HashSet<MatrixCoordinate>();
+    private final HashSet<MatrixCoordinate> doubleScoreWordIndexes = new HashSet<MatrixCoordinate>();
 
     private Board() {
         matrix = new Tile[boardDimension][boardDimension];
@@ -46,36 +46,28 @@ public class Board {
     }
 
     public int tryPlaceWord(Word word) {
-        boolean allLegal = true;
-        ArrayList<Word> newWords = null;
-        boolean boardIsLegal = boardLegal(word);
-        if (boardIsLegal) {
-            newWords = getWords(word);
-            for (Word newWord : newWords) {
-                if (!dictionaryLegal(newWord)) {
-                    allLegal = false;
-                    break;
-                }
+        if (!boardLegal(word)) return 0;
+        ArrayList<Word> newWords = getWords(word);
+        for (Word newWord : newWords) {
+            if (!dictionaryLegal(newWord)) {
+                return 0;
             }
         }
-        if (allLegal && newWords != null) {
-            int score = 0;
-            for (Word newWord : newWords) {
-                score += getScore(newWord);
-            }
-            int res = getScore(word);
-            if (emptyBoard) {
-                emptyBoard = false;
-            }
-            res += score;
-            for (Word newWord : newWords) {
-                placeOnBoard(newWord);
-            }
-            placeOnBoard(word);
-            return res;
-        } else {
-            return 0;
+
+        int res = getScore(word);
+        if (emptyBoard) {
+            emptyBoard = false;
         }
+        placeOnBoard(word);
+        for (Word newWord : newWords) {
+            res += getScore(newWord);
+        }
+//
+//        for (Word newWord : newWords) {
+//            placeOnBoard(newWord);
+//        }
+
+        return res;
     }
 
     private void initiateBoardScores() {
@@ -406,45 +398,13 @@ public class Board {
         if (word.getVertical()) {
             for (int i = 0; i < wordTiles.length; i++) {
                 MatrixCoordinate curr = new MatrixCoordinate(row + i, col);
-                Tile currTile = wordTiles[i];
-                int baseLetterScore = 0;
-                if (currTile == null && matrix[curr.row][curr.col] != null) {
-                    baseLetterScore = matrix[curr.row][curr.col].score;
-                }
-                if (currTile != null) {
-                    baseLetterScore = currTile.score;
-                }
-                if (doubleScoreIndexes.contains(curr)) {
-                    score += 2 * baseLetterScore;
-                } else {
-                    if (tripleScoreIndexes.contains(curr)) {
-                        score += 3 * baseLetterScore;
-                    } else {
-                        score += baseLetterScore;
-                    }
-                }
+                score = getScore(score, wordTiles, i, curr);
 
             }
         } else {
             for (int j = 0; j < wordTiles.length; j++) {
                 MatrixCoordinate curr = new MatrixCoordinate(row, col + j);
-                Tile currTile = wordTiles[j];
-                int baseLetterScore = 0;
-                if (currTile == null && matrix[curr.row][curr.col] != null) {
-                    baseLetterScore = matrix[curr.row][curr.col].score;
-                }
-                if (currTile != null) {
-                    baseLetterScore = currTile.score;
-                }
-                if (doubleScoreIndexes.contains(curr)) {
-                    score += 2 * baseLetterScore;
-                } else {
-                    if (tripleScoreIndexes.contains(curr)) {
-                        score += 3 * baseLetterScore;
-                    } else {
-                        score += baseLetterScore;
-                    }
-                }
+                score = getScore(score, wordTiles, j, curr);
 
             }
         }
@@ -461,6 +421,27 @@ public class Board {
         }
         if (emptyBoard && new MatrixCoordinate(7, 7).isWithinWord(word)) {
             score *= 2;
+        }
+        return score;
+    }
+
+    private int getScore(int score, Tile[] wordTiles, int j, MatrixCoordinate curr) {
+        Tile currTile = wordTiles[j];
+        int baseLetterScore = 0;
+        if (currTile == null && matrix[curr.row][curr.col] != null) {
+            baseLetterScore = matrix[curr.row][curr.col].score;
+        }
+        if (currTile != null) {
+            baseLetterScore = currTile.score;
+        }
+        if (doubleScoreIndexes.contains(curr)) {
+            score += 2 * baseLetterScore;
+        } else {
+            if (tripleScoreIndexes.contains(curr)) {
+                score += 3 * baseLetterScore;
+            } else {
+                score += baseLetterScore;
+            }
         }
         return score;
     }
@@ -482,19 +463,14 @@ public class Board {
             int wordRow = word.getRow();
             int wordCol = word.getCol();
             if (word.getVertical()) {
-                if (col == wordCol
+                return col == wordCol
                         && row >= wordRow
-                        && row < wordRow + n) {
-                    return true;
-                }
+                        && row < wordRow + n;
             } else {
-                if (row == wordRow
+                return row == wordRow
                         && col >= wordCol
-                        && col < wordCol + n) {
-                    return true;
-                }
+                        && col < wordCol + n;
             }
-            return false;
         }
 
         private HashSet<MatrixCoordinate> getSymmertyCoordinates() {
